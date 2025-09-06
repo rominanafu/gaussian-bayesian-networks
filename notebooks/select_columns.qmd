@@ -1,0 +1,280 @@
+---
+title: "Limpieza y filtrado de datos"
+format: html
+editor: source
+---
+
+```{r}
+# Importar librerias
+library(tidyverse)
+library(janitor)
+library(dplyr)
+```
+
+```{r}
+# Leemos las bases de datos
+aire <- read.csv("data/calidad_aire_2025.csv")
+sangre <- read.csv("data/ensanut2022_muestras.csv", sep = ";")
+socdem <- read.csv("data/ensanut2022_socdem.csv", sep = ";")
+
+# Limpiamos los nombres
+aire <- clean_names(aire)
+sangre <- clean_names(sangre)
+socdem <- clean_names(socdem)
+```
+
+
+```{r}
+## Seleccion y limpieza de columnas de los analisis de sangre
+
+# Columnas con la informacion de los analisis de sangre
+biomarcadores <- c("valor_ac_urico", # Ácido úrico mg/dl
+"valor_creat", # Creatinina mg/dl
+"valor_ferritina", # Ferritina ng/mL
+"valor_protcreac", # Proteína C Reactiva mg/L
+"valor_trig", # Triglicéridos mg/dl
+"valor_col_hdl", # Colesterol HDL mg/dl
+"valor_col_ldl", # Colesterol LDL mg/dl
+"valor_albu", # Albúmina g/dL
+"valor_hcst", # Homocisteina micromol/L
+"valor_glu_suero", # Glucosa mg/dl
+"valor_hb1ac", # Hemoglobina glucosilada. %
+"valor_eag", # Glucosa Promedio Estimada mg/dL
+"valor_insulina", # Insulina micro UI/ml
+"valor_vit_d", # Vitamina D ng/mL
+"valor_vit_b12", # Vitamina B12 pg/mL
+"valor_colest") # Colesterol total mg/dl
+
+# Seleccionar las columnas junto a los municipios y las edades
+sangre <- sangre[c("desc_mun", "desc_ent", "h0303",biomarcadores)]
+
+# Cambiar comas por puntos
+sangre = sangre |>
+        mutate(across(contains("valor"), ~ as.numeric(str_replace(., ",", "\\."))))
+
+# Cambiar el nombre de protcreac a pcr para simplificacion
+colnames(sangre)[which(names(sangre) == "valor_protcreac")] <- "valor_pcr"
+
+# Cambiar el nombre de la columna con la edad
+colnames(sangre)[which(names(sangre) == "h0303")] <- "edad"
+
+# Cambiar los nombres para eliminar el prefijo valor_
+sangre <- sangre %>%
+  rename_with(~ str_remove(., '^valor_'), .cols = starts_with('valor_'))
+
+# Eliminar los NAs en el data frame de sangre
+sangre <- drop_na(sangre)
+
+# Eliminar prefijo de los nombres de los estados y municipios
+sangre <- sangre |>
+  mutate(desc_mun = str_sub(desc_mun, 5))
+
+sangre <- sangre |>
+  mutate(desc_ent = str_sub(desc_ent, 4))
+
+# Estandarizar los nombres de municipios y estados
+sangre <- sangre %>%
+  mutate(municipio = desc_mun %>%
+           str_to_lower() %>%
+           iconv(to = "ASCII//TRANSLIT") %>%
+           str_replace_all("[^a-z0-9]+", "_") %>%
+           str_remove_all("^_|_$"))
+
+sangre <- sangre %>%
+  mutate(estado = desc_ent %>%
+           str_to_lower() %>%
+           iconv(to = "ASCII//TRANSLIT") %>%
+           str_replace_all("[^a-z0-9]+", "_") %>%
+           str_remove_all("^_|_$"))
+
+sangre$desc_ent <- NULL
+sangre$desc_mun <- NULL
+
+# Cambiar estados en los registros de sangre que tienen nombre muy largo
+sangre$estado <- gsub("coahuila_de_zaragoza", "coahuila", sangre$estado)
+sangre$estado <- gsub("michoacan_de_ocampo", "michoacan", sangre$estado)
+sangre$estado <- gsub("veracruz_de_ignacio_de_la_llave", "veracruz", sangre$estado)
+
+# Eliminar registros de sangre que no tienen ningun dato sobre su ubicacion en db del aire
+sangre <- sangre |>
+  filter(!municipio %in% c("silao_de_la_victoria", "santiago_tulantepec_de_lugo_guerre",
+                           "hueyapan", "heroica_ciudad_de_huajuapan_de_leo",
+                           "nanchital_de_lazaro_cardenas_del_r"))
+```
+
+```{r}
+## Seleccion y limpieza de registros de aire a utilizar
+
+# Estandarizar los nombres de estados y municipios
+aire <- aire %>%
+  mutate(estado = entidad_federativa %>%
+           str_to_lower() %>%
+           iconv(to = "ASCII//TRANSLIT") %>%
+           str_replace_all("[^a-z0-9]+", "_") %>%
+           str_remove_all("^_|_$"))
+
+aire <- aire %>%
+  mutate(municipio = municipio %>%
+           str_to_lower() %>%
+           iconv(to = "ASCII//TRANSLIT") %>%
+           str_replace_all("[^a-z0-9]+", "_") %>%
+           str_remove_all("^_|_$"))
+
+# Eliminar columnas anteriores
+aire$entidad_federativa <- NULL
+aire$entidad <- NULL
+
+# Eliminar NAs del data frame
+aire <- drop_na(aire)
+
+fuentes <- unique(aire$tipo_de_fuente)
+```
+
+```{r}
+# Finalmente, hacemos el join de la suma de las fuentes para cada municipio de 
+# la base de datos con los registros de sangre
+suma_contaminantes <- aire %>%
+  filter(tipo_de_fuente %in% c("Fuentes de área", 
+                               "Fuentes móviles carreteros", 
+                               "Fuentes móviles que no circulan por carretera")) %>%
+  group_by(estado, municipio) %>%
+  summarise(
+    across(c(so_2, co, n_ox, cov, pm_010, pm_2_5, nh_3), 
+           ~ sum(., na.rm = TRUE), 
+           .names = "suma_{.col}"),
+    .groups = 'drop'
+  )
+
+data <- sangre %>%
+  left_join(suma_contaminantes, by = c("estado", "municipio")) %>%
+  mutate(across(starts_with("suma_"), ~ coalesce(., 0)))
+```
+
+
+### Lo siguiente fue solamente para ver cuáles fuentes son las que tenían más datos
+
+
+```{r}
+#| eval: false
+
+# Combinaciones únicas de estado-municipio en sangre
+combinaciones_sangre <- sangre %>%
+  distinct(estado, municipio)
+
+# Tipos de fuente únicos en aire
+tipos_fuente <- unique(aire$tipo_de_fuente)
+
+# Método más eficiente para muchos registros
+cobertura_eficiente <- aire %>%
+  distinct(estado, municipio, tipo_de_fuente) %>%
+  group_by(estado, municipio) %>%
+  summarise(
+    fuentes_presentes = n(),
+    fuentes_lista = paste(sort(tipo_de_fuente), collapse = ", "),
+    .groups = 'drop'
+  ) %>%
+  right_join(combinaciones_sangre, by = c("estado", "municipio")) %>%
+  mutate(
+    fuentes_presentes = ifelse(is.na(fuentes_presentes), 0, fuentes_presentes),
+    fuentes_faltantes = length(tipos_fuente) - fuentes_presentes,
+    cobertura_completa = fuentes_faltantes == 0
+  )
+
+print("Cobertura eficiente:")
+print(cobertura_eficiente)
+
+# Estadísticas finales
+estadisticas_finales <- cobertura_eficiente %>%
+  summarise(
+    total = n(),
+    completas = sum(cobertura_completa),
+    incompletas = sum(!cobertura_completa),
+    porcentaje_completo = round(completas / total * 100, 2)
+  )
+
+print("Estadísticas finales:")
+print(estadisticas_finales)
+
+verificar_cobertura_fuente <- function(df_sangre, df_aire, tipo_fuente) {
+  # Filtrar el tipo de fuente específico
+  aire_filtrado <- df_aire %>%
+    filter(tipo_de_fuente == tipo_fuente)
+  
+  # Verificar cobertura
+  cobertura <- df_sangre %>%
+    distinct(estado, municipio) %>%
+    left_join(
+      aire_filtrado %>%
+        distinct(estado, municipio) %>%
+        mutate(tiene_fuente = TRUE),
+      by = c("estado", "municipio")
+    ) %>%
+    mutate(tiene_fuente = ifelse(is.na(tiene_fuente), FALSE, TRUE))
+  
+  # Resumen
+  resumen <- cobertura %>%
+    summarise(
+      total_combinaciones = n(),
+      con_fuente = sum(tiene_fuente),
+      sin_fuente = sum(!tiene_fuente),
+      porcentaje_cobertura = round(con_fuente / total_combinaciones * 100, 2)
+    )
+  
+  list(
+    cobertura = cobertura,
+    resumen = resumen,
+    tipo_fuente = tipo_fuente
+  )
+}
+
+# Usar la función para "Fuentes fijas"
+resultado_fijas <- verificar_cobertura_fuente(sangre, aire, "Fuentes móviles que no circulan por carretera")
+
+print("Resultado del análisis para Fuentes fijas:")
+print(resultado_fijas$resumen)
+
+verificar_cobertura_completa <- function(df_sangre, df_aire) {
+  # Combinaciones únicas en aire
+  comb_aire <- df_aire %>% distinct(estado, municipio)
+  
+  # Combinaciones únicas en sangre
+  comb_sangre <- df_sangre %>% distinct(estado, municipio)
+  
+  # Municipios sin cobertura
+  sin_cobertura <- comb_sangre %>% anti_join(comb_aire, by = c("estado", "municipio"))
+  
+  # Registros afectados
+  registros_afectados <- df_sangre %>%
+    inner_join(sin_cobertura, by = c("estado", "municipio")) %>%
+    nrow()
+  
+  # Resultados
+  list(
+    total_municipios_sangre = nrow(comb_sangre),
+    municipios_sin_cobertura = nrow(sin_cobertura),
+    porcentaje_municipios_sin_cobertura = round(nrow(sin_cobertura) / nrow(comb_sangre) * 100, 2),
+    total_registros_sangre = nrow(df_sangre),
+    registros_sin_cobertura = registros_afectados,
+    porcentaje_registros_sin_cobertura = round(registros_afectados / nrow(df_sangre) * 100, 2),
+    detalles_municipios_sin_cobertura = sin_cobertura
+  )
+}
+
+# Ejecutar la verificación
+resultado <- verificar_cobertura_completa(sangre, aire)
+
+cat("RESULTADO COMPLETO DE COBERTURA:\n")
+cat("Municipios en sangre:", resultado$total_municipios_sangre, "\n")
+cat("Municipios sin cobertura:", resultado$municipios_sin_cobertura, "\n")
+cat("Porcentaje de municipios sin cobertura:", resultado$porcentaje_municipios_sin_cobertura, "%\n")
+cat("Registros en sangre:", resultado$total_registros_sangre, "\n")
+cat("Registros sin cobertura:", resultado$registros_sin_cobertura, "\n")
+cat("Porcentaje de registros sin cobertura:", resultado$porcentaje_registros_sin_cobertura, "%\n")
+
+if(resultado$municipios_sin_cobertura > 0) {
+  cat("\n Municipios sin cobertura:\n")
+  print(resultado$detalles_municipios_sin_cobertura)
+}
+```
+
+
