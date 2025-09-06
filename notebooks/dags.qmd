@@ -1,0 +1,51 @@
+---
+title: "DAG contaminación ambiental"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(bnlearn)
+library(mgcv)
+library(gratia)
+library(ggplot2)
+
+data = read_csv()
+head(data)
+```
+
+## Propuesta de modelo 1: Dra. Aleydis
+
+#### Generar DAG
+
+```{r}
+dag1 = model2network("[so_2][co][nox][cov][pm_0_10][pm_2_5][nh_3][pcr|so_2:co:nox:cov:pm_0_10:pm_2_5:nh_3][ac_urico|pm_2_5:pm_0_10:nh_3][creat|pm_2_5:pm_0_10:nh_3]")
+
+graphviz.plot(dag, shape = "ellipse")
+```
+
+#### Ajustar datos
+
+```{r}
+dag1_fit = bn.fit(dag1, data=data)
+
+mod_so_2 = lm(so_2 ~ 1, data=data)
+mod_co = lm(co ~ 1, data=data)
+mod_nox = lm(nox ~ 1, data=data)
+mod_cov = lm(cov ~ 1, data=data)
+mod_pm_0_10 = lm(pm_0_10 ~ 1, data=data)
+mod_pm_2_5 = lm(pm_2_5 ~ 1, data=data)
+mod_nh_3 = lm(nh_3 ~ 1, data=data)
+
+mod_gam_pcr = gam(pcr ~ s(so_2) + s(co) + s(nox) + s(cov) + s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
+mod_gam_ac_urico = gam(ac_urico ~ s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
+mod_gam_creat = gam(creat ~ s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
+```
+
+#### BIC
+
+```{r}
+-1/2*(BIC(mod_so_2) + BIC(mod_co) + BIC(mod_nox) + BIC(mod_cov) + BIC(mod_pm_0_10) +
+        BIC(mod_pm_2_5) + BIC(mod_nh_3) + BIC(mod_gam_pcr) + BIC(mod_gam_ac_urico) +
+        BIC(mod_gam_creat))
+```
