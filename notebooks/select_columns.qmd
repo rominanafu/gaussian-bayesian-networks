@@ -150,6 +150,10 @@ data <- sangre %>%
   mutate(across(starts_with("suma_"), ~ coalesce(., 0)))
 ```
 
+```{r}
+# Escribimos el csv
+write.csv(data, file="data.csv", row.names=F)
+```
 
 ### Lo siguiente fue solamente para ver cuáles fuentes son las que tenían más datos
 
@@ -276,5 +280,6 @@ if(resultado$municipios_sin_cobertura > 0) {
   print(resultado$detalles_municipios_sin_cobertura)
 }
 ```
+
 
 
