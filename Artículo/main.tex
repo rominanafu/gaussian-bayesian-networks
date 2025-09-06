@@ -1,0 +1,74 @@
+\documentclass[12pt, letterpaper]{report}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+\usepackage[figurename=Figura]{caption}
+\usepackage{indentfirst}
+\usepackage{biblatex}
+\addbibresource{bibliografia.bib}
+
+\title{Redes Bayesianas Gaussianas: Un estudio de la influencia de los contaminantes del aire en la salud de la población mexicana}
+\author{ Romina Nájera Fuentes - A01424411 \\ Humberto Mondragón García - A01711912 \\ Juan Braulio Olivares Rodríguez - A01706880 \\ Edgar Andrey Balvaneda - A01644770
+ \\ \\ Análisis de métodos de razonamiento e incertidumbre}
+\date{7 de Septiembre del 2025}
+
+
+\begin{document}
+\maketitle
+\section*{Abstract}
+\newpage
+
+\section*{Introducción}
+
+La contaminación ambiental se ha convertido en una problemática crítica para la salud pública a nivel mundial. Según la Organización Mundial de la Salud, 9 de cada 10 personas respiran aire con altos niveles de contaminantes, y 4.2 millones de personas mueren al año a causa de la contaminación del aire del exterior. \cite{who2018}
+\\
+
+En México, en las zonas metropolitanas, como la Ciudad de México, Monterrey y Guadalajara, se reportan concentraciones elevadas de contaminantes provenientes del intenso tráfico vehicular, sus altas densidades poblacionales y la actividad industrial con pocas o nulas restricciones en la liberación de contaminantes en el ambiente. Si bien esta mezcla de contaminantes es compleja, ciertos de ellos son especialmente preocupantes por su impacto en la salud pública. Los datos de la SEMARNAT nos proveen de los siguientes contaminantes:
+\\
+
+El material particulado ($PM_{10}$ y $PM_{2.5}$) constituye uno de los contaminantes atmosféricos más nocivos para la salud. Proviene principalmente de procesos de combustión como los de vehículos o actividades industriales, es culpable de agravamiento de los síntomas del asma, deterioro de la función pulmonar y aumento del riesgo de cáncer de pulmón, garganta o laringe.\cite{airly}
+\\
+
+El dióxido de azufre ($SO_2$) es un gas que se produce principalmente por la quema de combustibles fósiles como el carbón y el petróleo. Su inhalación provoca irritación de las vías respiratorias y desencadena reacciones inflamatorias locales y sistémicas. \cite{ivhhn2003}
+\\
+
+El monóxido de carbono ($CO$), por su parte, es un gas inodoro y altamente tóxico que se produce principalmente por la combustión incompleta de gasolina, madera, carbón o gas. Su mecanismo de toxicidad se debe a su alta afinidad con la hemoglobina, lo que desplaza al oxígeno y disminuye la capacidad de transporte de este en la sangre. \cite{mayoclinic2025}
+\\
+
+Los óxidos de nitrógeno ($NOx$), que incluyen principalmente el dióxido de nitrógeno ($NO_2$) y el óxido nítrico ($NO$), se generan a partir de procesos de combustión como en vehículos motorizados, plantas eléctricas e industrias. Estos gases son potentes irritantes de las vías respiratorias, provocan inflamación bronquial y reducen la función pulmonar. \cite{atsdr2016}
+\\
+
+Por último, los compuestos orgánicos volátiles ($COV$) y el amoníaco ($NH_3$), aunque menos estudiados en comparación con los contaminantes anteriores, también tienen efectos relevantes en la calidad del aire y la salud. Se han vinculado con irritación ocular y respiratoria, así como con procesos de estrés oxidativo. \cite{atsdr2026} Los $COV$ provienen de solventes, combustibles, pinturas y procesos industriales, contribuyen junto con los $NOx$ a la formación de ozono troposférico. \cite{epa2025}
+\\
+
+Por la ya mencionada complejidad de los contaminantes, resulta necesario estudiar no solo su presencia ambiental, sino también sus repercusiones biológicas medibles en la población.
+\\
+
+El presente trabajo tiene como objetivo principal implementar un modelo probabilístico que permita identificar en qué medida estos contaminantes influyen en la salud de la población mexicana, analizando sus biomarcadores. Comprender la magnitud de este impacto, el origen de los contaminantes, y los componentes biológicos afectados es fundamental para el diseño de políticas públicas efectivas y estrategias de prevención.
+\\
+
+Para ello utilizamos los datos de muestras biológicas de la Encuesta Nacional de Salud y Nutrición (ENSANUT) 2022, y registros de contaminantes atmosféricos provenientes de la SEMARNAT.
+\\
+
+Existen diversos enfoques estocásticos que podemos utilizar para modelar la influencia de los contaminantes en los biomarcadores. Entre ellos se encuentran métodos como la regresión, que permite evaluar asociaciones entre variables, los procesos de Poisson, que modelan conteos de eventos discretos, y las simulaciones Monte Carlo, que permiten explorar el comportamiento de modelos complejos. Sin embargo, estas aproximaciones frecuentemente se centran en relaciones simples entre variables o en estructuras lineales, lo que limita su capacidad de capturar la red de dependencias entre las variables de este estudio. Frente a ello, las redes bayesianas gaussianas ofrecen una alternativa más flexible representando las relaciones de dependencia en forma de un grafo acíclico dirigido y modelar la incertidumbre mediante distribuciones gaussianas.
+
+\section*{Metodología}
+
+
+
+\section*{Aplicación}
+
+\newpage
+
+\section*{Conclusión}
+
+
+%% Referencias
+\printbibliography[title={Referencias}]
+
+\end{document}
