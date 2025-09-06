@@ -10,7 +10,8 @@ library(mgcv)
 library(gratia)
 library(ggplot2)
 
-data = read_csv()
+data = read.csv("../data/data.csv")
+data[] <- lapply(data, as.numeric)
 head(data)
 ```
 
@@ -19,35 +20,40 @@ head(data)
 #### Generar DAG
 
 ```{r}
-dag1 = model2network("[so_2][co][nox][cov][pm_0_10][pm_2_5][nh_3][pcr|so_2:co:nox:cov:pm_0_10:pm_2_5:nh_3][ac_urico|pm_2_5:pm_0_10:nh_3][creat|pm_2_5:pm_0_10:nh_3]")
-
+dag1 = model2network("[suma_so_2][suma_co][suma_n_ox][suma_cov][suma_pm_010][suma_pm_2_5][suma_nh_3][pcr|suma_so_2:suma_co:suma_n_ox:suma_cov:suma_pm_010:suma_pm_2_5:suma_nh_3][ac_urico|suma_pm_2_5:suma_pm_010:suma_nh_3][creat|suma_pm_2_5:suma_pm_010:suma_nh_3]")
+data_dag1 <- data[, nodes(dag1)]
 graphviz.plot(dag1, shape = "ellipse")
 ```
 
 #### Ajustar datos
 
 ```{r}
-dag1_fit = bn.fit(dag1, data=data)
+dag1_fit = bn.fit(dag1, data=data_dag1)
 
-mod_so_2 = lm(so_2 ~ 1, data=data)
-mod_co = lm(co ~ 1, data=data)
-mod_nox = lm(nox ~ 1, data=data)
-mod_cov = lm(cov ~ 1, data=data)
-mod_pm_0_10 = lm(pm_0_10 ~ 1, data=data)
-mod_pm_2_5 = lm(pm_2_5 ~ 1, data=data)
-mod_nh_3 = lm(nh_3 ~ 1, data=data)
+mod_so_2 = lm(suma_so_2 ~ 1, data=data_dag1)
+mod_co = lm(suma_co ~ 1, data=data_dag1)
+mod_nox = lm(suma_n_ox ~ 1, data=data_dag1)
+mod_cov = lm(suma_cov ~ 1, data=data_dag1)
+mod_pm_010 = lm(suma_pm_010 ~ 1, data=data_dag1)
+mod_pm_2_5 = lm(suma_pm_2_5 ~ 1, data=data_dag1)
+mod_nh_3 = lm(suma_nh_3 ~ 1, data=data_dag1)
 
-mod_gam_pcr = gam(pcr ~ s(so_2) + s(co) + s(nox) + s(cov) + s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
-mod_gam_ac_urico = gam(ac_urico ~ s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
-mod_gam_creat = gam(creat ~ s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
+mod_gam_pcr = gam(pcr ~ s(suma_so_2) + s(suma_co) + s(suma_n_ox) + s(suma_cov) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag1, method="REML")
+mod_gam_ac_urico = gam(ac_urico ~ s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag1, method="REML")
+mod_gam_creat = gam(creat ~ s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag1, method="REML")
 ```
 
 #### BIC
 
 ```{r}
--1/2*(BIC(mod_so_2) + BIC(mod_co) + BIC(mod_nox) + BIC(mod_cov) + BIC(mod_pm_0_10) +
+-1/2*(BIC(mod_so_2) + BIC(mod_co) + BIC(mod_nox) + BIC(mod_cov) + BIC(mod_pm_010) +
         BIC(mod_pm_2_5) + BIC(mod_nh_3) + BIC(mod_gam_pcr) + BIC(mod_gam_ac_urico) +
         BIC(mod_gam_creat))
+```
+```{r}
+(AIC(mod_so_2) + AIC(mod_co) + AIC(mod_nox) + AIC(mod_cov) + AIC(mod_pm_010) +
+        AIC(mod_pm_2_5) + AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_ac_urico) +
+        AIC(mod_gam_creat))
 ```
 
 ## Propuesta 2: Dra. Silvia Rodríguez, Dr. Ricardo Cano
@@ -55,25 +61,25 @@ mod_gam_creat = gam(creat ~ s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method=
 #### Generar DAG
 
 ```{r}
-dag2 = model2network("[so_2][nox][pm_0_10][pm_2_5][nh_3][edad][pcr|so_2:nox:pm_0_10:pm_2_5:nh_3:edad][ac_urico|so_2:nox:pm_0_10:pm_2_5:nh_3:edad][ferritina|so_2:nox:pm_0_10:pm_2_5:nh_3:edad]")
-
+dag2 = model2network("[suma_so_2][suma_n_ox][suma_pm_010][suma_pm_2_5][suma_nh_3][edad][pcr|suma_so_2:suma_n_ox:suma_pm_010:suma_pm_2_5:suma_nh_3:edad][ac_urico|suma_so_2:suma_n_ox:suma_pm_010:suma_pm_2_5:suma_nh_3:edad][ferritina|suma_so_2:suma_n_ox:suma_pm_010:suma_pm_2_5:suma_nh_3:edad]")
+data_dag2 <- data[, nodes(dag2)]
 graphviz.plot(dag2, shape = "ellipse")
 ```
 
 #### Ajustar datos
 
 ```{r}
-dag2_fit = bn.fit(dag2, data=data)
+dag2_fit = bn.fit(dag2, data=data_dag2)
 
-mod_so_2 = lm(so_2 ~ 1, data=data)
-mod_nox = lm(nox ~ 1, data=data)
-mod_pm_0_10 = lm(pm_0_10 ~ 1, data=data)
-mod_pm_2_5 = lm(pm_2_5 ~ 1, data=data)
-mod_nh_3 = lm(nh_3 ~ 1, data=data)
+mod_so_2 = lm(suma_so_2 ~ 1, data=data_dag2)
+mod_nox = lm(suma_n_ox ~ 1, data=data_dag2)
+mod_pm_0_10 = lm(suma_pm_010 ~ 1, data=data_dag2)
+mod_pm_2_5 = lm(suma_pm_2_5 ~ 1, data=data_dag2)
+mod_nh_3 = lm(suma_nh_3 ~ 1, data=data_dag2)
 
-mod_gam_pcr = gam(pcr ~ s(so_2) + s(nox) + s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
-mod_gam_ac_urico = gam(ac_urico ~ s(so_2) + s(nox) + s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
-mod_gam_ferritina = gam(creat ~ s(so_2) + s(nox) + s(pm_2_5) + s(pm_0_10) + s(nh_3), data=data, method="REML")
+mod_gam_pcr = gam(pcr ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data, method="REML")
+mod_gam_ac_urico = gam(ac_urico ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag2, method="REML")
+mod_gam_ferritina = gam(ferritina ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag2, method="REML")
 ```
 
 #### BIC
@@ -82,4 +88,10 @@ mod_gam_ferritina = gam(creat ~ s(so_2) + s(nox) + s(pm_2_5) + s(pm_0_10) + s(nh
 -1/2*(BIC(mod_so_2) + BIC(mod_nox) + BIC(mod_pm_0_10) + BIC(mod_pm_2_5) +
         BIC(mod_nh_3) + BIC(mod_gam_pcr) + BIC(mod_gam_ac_urico) +
         BIC(mod_gam_ferritina))
+```
+
+```{r}
+(AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_pm_0_10) + AIC(mod_pm_2_5) +
+        AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_ac_urico) +
+        AIC(mod_gam_ferritina))
 ```
