@@ -59,7 +59,37 @@ Existen diversos enfoques estocásticos que podemos utilizar para modelar la inf
 
 \section*{Metodología}
 
+Una red bayesiana es definida como un grafo acíclico dirigido, conocido como DAG, $D=(V,E)$, en donde $V=\{X_1,X_2,...,X_n\}$ representa a las variables del problema, y E representa las relaciones de dependencia entre las variables. Asimismo, se cuenta con P, el conjunto de distribuciones de probabilidad asociadas a cada nodo.
+\\
 
+Se utilizará una red bayesiana de tipo gaussiana, la cual es utilizada para modelar variables aleatorias continuas que siguen una distribución normal. En este caso, la distribución conjunta de las variables del problema es normal multivariada; es decir, sigue una distribución $N(\mu, \Sigma)$, siendo $\mu$ el vector de medias y $\Sigma$ la matriz de covarianzas. \cite{tesis}
+\\
+
+En la versión gaussiana de la red bayesiana, los nodos raíz, o nodos sin padres, siguen marginalmente una distribución univariada normal. Los demás nodos siguen de manera marginal una distribución condicionada normal, con una media que se representa a través de un modelo lineal respecto a las medias de los padres, y con una varianza propia \cite{scutari2021bayesian}.
+\\
+
+Entre las variables presentadas en la ENSANUT, se encuentra información sociodemográfica de las personas encuestadas, como el sexo, la edad, la zona de residencia, el acceso a servicios de salud pública, entre otros. Sin embargo, de estos solamente se tomará en cuenta la edad, que es una variable que se puede considerar continua, y el lugar en el que se reside, para asignar los niveles de contaminantes a los que los encuestados se exponen de manera constante.
+\\
+
+Además de la información sociodemográfica, la encuesta también contiene información relacionada con biomarcadores. Estos incluyen los niveles de ácido úrico, albúmina, colesterol HDL y LDL, colesterol total, creatinina, glucosa, insulina, proteína C reactiva, triglicéridos, hemoglobina glucosilada, ferritina, folato, homocisteina, receptor de transferrina, vitamina B12 y vitamina D de los encuestados. Si bien se cuenta con más información, estas variables son las que son continuas, condición necesaria en las redes bayesianas gaussianas, por lo que el impacto en la salud se determinará solamente con estas variables.
+\\
+
+Con la información de la SEMARNAT, como se mencionó previamente en la introducción, se utilizarán los niveles de los contaminantes $SO_2$, $CO$, $COV$, $NOx$, $PM_{10}$ y $PM_{2.5}$ medidos en los municipios de cada estado del país. Los contaminantes se dividen en diferentes tipos de fuentes causantes, que son las fuentes fijas, de área, móviles carreteros, móviles que no circulan por carretera y naturales. Por observación del Dr. Ernesto Reyes Villegas, experto en calidad del aire, estas fuentes son complementarias, por lo que la suma de los contaminantes en cada fuente es equivalente a la contaminación total en dicho municipio. Sin embargo, en vista de que no todos los municipios presentan información completa en las fuentes fijas y las fuentes naturales, se considerará que el nivel de contaminación a la que se somete una persona que reside en un municipio, es igual a la suma de la contaminación de fuentes de área, de móviles carreteros y de móviles que no circulan por carretera para cada contaminante por municipio.
+\\
+
+Las variables seleccionadas son exclusivamente continuas, con el propósito de utilizar la red bayesiana gaussiana. Agregar una variable categórica, como lo podría ser el sexo de la persona encuestada, representaría utilizar un modelo distinto al aquí presentado. Una manera de realizarlo es a través de la discretización de las variables continuas. Sin embargo, para una mayor precisión, la discretización se tendría que llevar con múltiples categorías para cada variable, lo cual incrementa la complejidad del modelo y su tiempo de cómputo. \cite{cowell}
+\\
+
+Otra manera de realizar el modelo con la combinación de variables discretas y continuas es a través de una red bayesiana mixta. En esta, los nodos discretos siguen una distribución multinomial, y sus nodos padres pueden ser solamente otras variables discretas. En cambio, los nodos continuos simplemente siguen una distribución normal, cuando ninguno de sus nodos padre son discretos; y siguen un conjunto de distribuciones normales, cada una para cada posible combinación de las variables de las que dependen, en caso de tener alguna variable discreta como nodos padre. \cite{scutari2021bayesian}
+\\
+
+Utilizando estas variables, se consultará a especialistas en las áreas de medicina y de bioquímica, quienes apoyarán en la realización de la red bayesiana gaussiana, seleccionando las variables de interés, y proponiendo las relaciones que consideren relevantes.
+\\
+
+Con ello, se generarán 3 DAGs, las cuales serán ajustadas a los datos para ser posteriormente comparadas entre sí a través del Criterio de Información Bayesiano (BIC), el cual considera la verosimilitud y la complejidad de cada modelo para asignar un puntaje que se busca maximizar  \cite{scutari2021bayesian}, y del Criterio de Información Akaike (AIC), el cual considera los mismos parámetros que el BIC, pero penaliza en menor escala a la complejidad del modelo.
+\\
+
+Después de seleccionar un modelo óptimo en base al puntaje BIC, se formarán 3 preguntas a resolver con dicha red bayesiana, las cuales se propondrán con el apoyo de los especialistas contactados para la propuesta de las redes.
 
 \section*{Aplicación}
 
