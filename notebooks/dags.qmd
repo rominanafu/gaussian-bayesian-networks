@@ -78,7 +78,7 @@ mod_pm_0_10 = lm(suma_pm_010 ~ 1, data=data_dag2)
 mod_pm_2_5 = lm(suma_pm_2_5 ~ 1, data=data_dag2)
 mod_nh_3 = lm(suma_nh_3 ~ 1, data=data_dag2)
 
-mod_gam_pcr = gam(pcr ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data, method="REML")
+mod_gam_pcr = gam(pcr ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag2, method="REML")
 mod_gam_ac_urico = gam(ac_urico ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag2, method="REML")
 mod_gam_ferritina = gam(ferritina ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data=data_dag2, method="REML")
 ```
@@ -104,8 +104,10 @@ nodos <- c("suma_co","suma_n_ox","suma_so_2","suma_cov","suma_nh_3","suma_pm_010
            "pcr","glu_suero","hb1ac","eag","insulina","vit_d","vit_b12","creat",
            "ac_urico","hcst","ferritina","trig","col_hdl","col_ldl","colest","albu")
 
+data_dag3 <- data[, nodos]
 
-dag <- empty.graph(nodos)
+
+dag3 <- empty.graph(nodos)
 
 
 arcos <- matrix(c(
@@ -144,8 +146,62 @@ arcos <- matrix(c(
 ), byrow=TRUE, ncol=2)
 
 
-arcs(dag) <- arcos
+arcs(dag3) <- arcos
 
 
-graphviz.plot(dag, shape = "ellipse")
+graphviz.plot(dag3, shape = "ellipse")
+```
+
+#### Ajustar datos
+
+```{r}
+dag3_fit = bn.fit(dag3, data=data_dag3)
+
+mod_so_2 = lm(suma_so_2 ~ 1, data=data_dag3)
+mod_nox = lm(suma_n_ox ~ 1, data=data_dag3)
+mod_co = lm(suma_co ~ 1, data=data_dag3)
+mod_cov = lm(suma_cov ~ 1, data=data_dag3)
+mod_pm_0_10 = lm(suma_pm_010 ~ 1, data=data_dag3)
+mod_pm_2_5 = lm(suma_pm_2_5 ~ 1, data=data_dag3)
+mod_nh_3 = lm(suma_nh_3 ~ 1, data=data_dag3)
+
+mod_gam_pcr = gam(pcr ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3) + s(suma_co) + s(suma_cov), data=data_dag3, method="REML")
+mod_gam_hcst = gam(hcst ~ s(pcr), data=data_dag3, method="REML")
+mod_gam_glu_suero = gam(glu_suero ~ s(pcr), data=data_dag3, method="REML")
+mod_gam_trig = gam(trig ~ s(pcr) + s(suma_pm_2_5) + s(suma_pm_010), data=data_dag3, method="REML")
+mod_gam_ferritina = gam(ferritina ~ s(hcst), data=data_dag3, method="REML")
+mod_gam_insulina = gam(insulina ~ s(glu_suero), data=data_dag3, method="REML")
+mod_gam_hb1ac = gam(hb1ac ~ s(glu_suero), data=data_dag3, method="REML")
+mod_gam_col_hdl = gam(col_hdl ~ s(trig), data=data_dag3, method="REML")
+mod_gam_col_ldl = gam(col_ldl ~ s(trig), data=data_dag3, method="REML")
+mod_gam_albu = gam(albu ~ s(trig), data=data_dag3, method="REML")
+mod_gam_eag = gam(eag ~ s(hb1ac), data=data_dag3, method="REML")
+mod_gam_vit_d = gam(vit_d ~ s(hb1ac), data=data_dag3, method="REML")
+mod_gam_colest = gam(colest ~ s(col_ldl), data=data_dag3, method="REML")
+mod_gam_vit_b12 = gam(vit_b12 ~ s(vit_d), data=data_dag3, method="REML")
+mod_gam_creat = gam(creat ~ s(vit_d), data=data_dag3, method="REML")
+mod_gam_ac_urico = gam(ac_urico ~ s(eag) + s(creat), data=data_dag3, method="REML")
+```
+
+#### BIC
+
+```{r}
+-1/2*(BIC(mod_so_2) + BIC(mod_nox) + BIC(mod_co) + BIC(mod_cov) + BIC(mod_pm_0_10) +
+        BIC(mod_pm_2_5) + BIC(mod_nh_3) + BIC(mod_gam_pcr) + BIC(mod_gam_hcst) +
+        BIC(mod_gam_glu_suero) + BIC(mod_gam_trig) + BIC(mod_gam_ferritina) +
+        BIC(mod_gam_insulina) + BIC(mod_gam_hb1ac) + BIC(mod_gam_col_hdl) +
+        BIC(mod_gam_col_ldl) + BIC(mod_gam_albu) + BIC(mod_gam_eag) +
+        BIC(mod_gam_vit_d) + BIC(mod_gam_colest) + BIC(mod_gam_vit_b12) +
+        BIC(mod_gam_creat) + BIC(mod_gam_ac_urico)
+)
+```
+
+```{r}
+(AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_co) + AIC(mod_cov) + AIC(mod_pm_0_10) +
+  AIC(mod_pm_2_5) + AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_hcst) +
+  AIC(mod_gam_glu_suero) + AIC(mod_gam_trig) + AIC(mod_gam_ferritina) +
+  AIC(mod_gam_insulina) + AIC(mod_gam_hb1ac) + AIC(mod_gam_col_hdl) +
+  AIC(mod_gam_col_ldl) + AIC(mod_gam_albu) + AIC(mod_gam_eag) +
+  AIC(mod_gam_vit_d) + AIC(mod_gam_colest) + AIC(mod_gam_vit_b12) +
+  AIC(mod_gam_creat) + AIC(mod_gam_ac_urico))
 ```
