@@ -9,6 +9,7 @@ library(bnlearn)
 library(mgcv)
 library(gratia)
 library(ggplot2)
+library(Rgraphviz)
 
 data = read.csv("../data/data.csv")
 data[] <- lapply(data, as.numeric)
@@ -94,4 +95,20 @@ mod_gam_ferritina = gam(ferritina ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5)
 (AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_pm_0_10) + AIC(mod_pm_2_5) +
         AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_ac_urico) +
         AIC(mod_gam_ferritina))
+```
+
+
+### Super DAG
+```{r}
+nodos <- c("suma_co","suma_n_ox","suma_so_2","suma_cov","suma_nh_3","suma_pm_010","suma_pm_2_5",
+           "pcr","glu_suero","hb1ac","eag","insulina","vit_d","vit_b12","creat",
+           "ac_urico","hcst","ferritina","trig","col_hdl","col_ldl","colest","albu")
+
+
+dag <- empty.graph(nodos)
+
+
+
+
+graphviz.plot(dag, shape = "ellipse")
 ```
