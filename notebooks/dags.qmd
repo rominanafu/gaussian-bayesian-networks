@@ -108,6 +108,43 @@ nodos <- c("suma_co","suma_n_ox","suma_so_2","suma_cov","suma_nh_3","suma_pm_010
 dag <- empty.graph(nodos)
 
 
+arcos <- matrix(c(
+  
+  "suma_co","pcr",
+  "suma_n_ox","pcr",
+  "suma_so_2","pcr",
+  "suma_cov","pcr",
+  "suma_nh_3","pcr",
+  "suma_pm_010","pcr",
+  "suma_pm_2_5","pcr",
+  
+  
+  "pcr","glu_suero",
+  
+  
+  "glu_suero","hb1ac",
+  "hb1ac","eag",
+  "glu_suero","insulina",
+  "glu_suero","vit_d",
+  "vit_d","vit_b12",
+  "vit_d","creat",
+  "creat","ac_urico",
+  "eag","ac_urico",
+  "glu_suero","hcst",
+  "hcst","ferritina",
+  
+  
+  "pcr","trig",
+  "suma_pm_010","trig",
+  "suma_pm_2_5","trig",
+  "trig","col_hdl",
+  "trig","col_ldl",
+  "col_ldl","colest",
+  "trig","albu"
+), byrow=TRUE, ncol=2)
+
+
+arcs(dag) <- arcos
 
 
 graphviz.plot(dag, shape = "ellipse")
