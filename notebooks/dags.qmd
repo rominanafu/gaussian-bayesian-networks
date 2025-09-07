@@ -51,8 +51,11 @@ mod_gam_creat = gam(creat ~ s(suma_pm_2_5) + s(suma_pm_010) + s(suma_nh_3), data
         BIC(mod_pm_2_5) + BIC(mod_nh_3) + BIC(mod_gam_pcr) + BIC(mod_gam_ac_urico) +
         BIC(mod_gam_creat))
 ```
+
+#### AIC
+
 ```{r}
-(AIC(mod_so_2) + AIC(mod_co) + AIC(mod_nox) + AIC(mod_cov) + AIC(mod_pm_010) +
+-1/2 * (AIC(mod_so_2) + AIC(mod_co) + AIC(mod_nox) + AIC(mod_cov) + AIC(mod_pm_010) +
         AIC(mod_pm_2_5) + AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_ac_urico) +
         AIC(mod_gam_creat))
 ```
@@ -92,7 +95,7 @@ mod_gam_ferritina = gam(ferritina ~ s(suma_so_2) + s(suma_n_ox) + s(suma_pm_2_5)
 ```
 
 ```{r}
-(AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_pm_0_10) + AIC(mod_pm_2_5) +
+-1/2 * (AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_pm_0_10) + AIC(mod_pm_2_5) +
         AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_ac_urico) +
         AIC(mod_gam_ferritina))
 ```
@@ -197,7 +200,7 @@ mod_gam_ac_urico = gam(ac_urico ~ s(eag) + s(creat), data=data_dag3, method="REM
 ```
 
 ```{r}
-(AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_co) + AIC(mod_cov) + AIC(mod_pm_0_10) +
+-1/2 * (AIC(mod_so_2) + AIC(mod_nox) + AIC(mod_co) + AIC(mod_cov) + AIC(mod_pm_0_10) +
   AIC(mod_pm_2_5) + AIC(mod_nh_3) + AIC(mod_gam_pcr) + AIC(mod_gam_hcst) +
   AIC(mod_gam_glu_suero) + AIC(mod_gam_trig) + AIC(mod_gam_ferritina) +
   AIC(mod_gam_insulina) + AIC(mod_gam_hb1ac) + AIC(mod_gam_col_hdl) +
