@@ -120,17 +120,17 @@ arcos <- matrix(c(
   
   
   "pcr","glu_suero",
+  "pcr","hcst",
   
   
   "glu_suero","hb1ac",
   "hb1ac","eag",
   "glu_suero","insulina",
-  "glu_suero","vit_d",
+  "hb1ac","vit_d",
   "vit_d","vit_b12",
   "vit_d","creat",
   "creat","ac_urico",
   "eag","ac_urico",
-  "glu_suero","hcst",
   "hcst","ferritina",
   
   
