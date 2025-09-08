@@ -13,9 +13,9 @@ library(dplyr)
 
 ```{r}
 # Leemos las bases de datos
-aire <- read.csv("data/calidad_aire_2025.csv")
-sangre <- read.csv("data/ensanut2022_muestras.csv", sep = ";")
-socdem <- read.csv("data/ensanut2022_socdem.csv", sep = ";")
+aire <- read.csv("../data/calidad_aire_2025.csv")
+sangre <- read.csv("../data/ensanut2022_muestras.csv", sep = ";")
+socdem <- read.csv("../data/ensanut2022_socdem.csv", sep = ";")
 
 # Limpiamos los nombres
 aire <- clean_names(aire)

@@ -70,6 +70,7 @@ data_dag2 <- data[, nodes(dag2)]
 graphviz.plot(dag2, shape = "ellipse")
 ```
 
+
 #### Ajustar datos
 
 ```{r}
@@ -207,4 +208,32 @@ mod_gam_ac_urico = gam(ac_urico ~ s(eag) + s(creat), data=data_dag3, method="REM
   AIC(mod_gam_col_ldl) + AIC(mod_gam_albu) + AIC(mod_gam_eag) +
   AIC(mod_gam_vit_d) + AIC(mod_gam_colest) + AIC(mod_gam_vit_b12) +
   AIC(mod_gam_creat) + AIC(mod_gam_ac_urico))
+```
+
+### Queries
+
+¿Cuál es la probabilidad que una persona de 20 años o menos tenga niveles de ferritina mayores a 100 respecto a las personas mayores de 50 años en lugares con niveles de NOx mayores a 20,000?
+
+```{r}
+p_menor <- cpquery(dag2_fit, event = (ferritina>100), evidence=(edad<=20 & suma_n_ox>20000), n = 10^6)
+p_mayor <- cpquery(dag2_fit,event = (ferritina > 100), evidence = (edad > 50 & suma_n_ox > 20000), n = 10^6)
+p_menor
+p_mayor
+```
+¿Cuál es la probabilidad de que una persona viva en un municipio con niveles de PM_{10} mayores a 20,000 dado que su nivel de ácido úrico es menor a 3 respecto a las personas con nivel de 6 o más?
+```{r}
+p_bajo <- cpquery(dag2_fit,event = (suma_pm_010 > 2000), evidence = (ac_urico < 3),n = 10^6 )
+p_alto <- cpquery(dag2_fit,event = (suma_pm_010 > 2000), evidence = (ac_urico >= 6), n = 10^6)
+p_bajo
+p_alto
+```
+¿Cuál es la probabilidad de que personas que viven en lugares con niveles de NH_3 superiores a 6,000 y niveles de SO_2 superiores a 200 tengan niveles de ferritina mayores a 50?
+
+```{r}
+p_ferritina_alta <- cpquery(dag2_fit, event = (ferritina > 50), evidence = (suma_nh_3 > 6000 & suma_so_2 > 200),n = 10^6)
+p_ferritina_alta
+```
+¿Cuál es la probabilidad de que una persona tenga niveles de proteína C reactiva mayores a 0.5 dado que vive en un municipio con niveles de PM_{2.5} mayores a 2,000 y niveles de PM_{10} mayores a 2500?
+```{r}
+cpquery(dag2_fit, event=(pcr>0.5), evidence=((suma_pm_2_5>2000) & (suma_pm_010>2500)), n=10^6)
 ```
