@@ -120,6 +120,25 @@ La tercer propuesta de DAG se obtuvo con la ayuda del estudiante de medicina Jea
     \label{fig:dag3}
 \end{figure}
 
+Evaluando los modelos en los criterios de información seleccionados, se obtuvieron los resultados de la Tabla \ref{tab:scores}. Como ambos criterios se buscan maximizar para determinar un mejor modelo, los resultados muestran ser consistentes entre ambos criterios. Es decir, se puede concluir que el segundo modelo resultó en los valores más altos de los criterios, por lo que es la DAG con mejor ajuste entre las propuestas. Por otro lado, el tercer modelo tuvo los resultados más bajos, lo cual quiere decir que fue el que tuvo un peor ajuste a los datos. Esto se puede deber a la diferencia en complejidad de los modelos, puesto que el segundo modelo es el que tiene una menor cantidad de nodos, mientras que el tercer modelo es el que utiliza una mayor cantidad de variables. Sin embargo, los puntajes de los criterios también se ven influenciados por la verosimilitud del modelo, por lo que un menor puntaje también podría indicar un mal ajuste.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Modelo & BIC & AIC \\
+        \hline
+        1 & $-42502.98$ & $-42418.14$ \\
+        \hline
+        2 & $-32122.3$ & $-32027.29$ \\
+        \hline
+        3 & $-77035.66$ & $-76779.56$ \\
+        \hline
+    \end{tabular}
+    \caption{Criterios de información bayesiano y akaike en los modelos propuestos.}
+    \label{tab:scores}
+\end{table}
+
 \section*{Conclusión}
 
 
