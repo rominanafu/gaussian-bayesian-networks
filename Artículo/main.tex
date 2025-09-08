@@ -106,7 +106,7 @@ Después de seleccionar un modelo óptimo en base al puntaje BIC, se formarán 3
 
 \section*{Aplicación}
 
-La primera propuesta de la DAG fue dada por la estudiante de medicina Leslie Aleydis Ocampo Hernández, quien recalcó el efecto de los contaminantes en el aumento de la proteína C reactiva ($pcr$), debido a la inflamación que estos generan. Asimismo, estableció el efecto que tiene el material particulado ($PM_{10}$ y $PM_{2.5}$) y el amoniaco ($NH_3$) en los niveles de ácido úrico y creatinina, debido al efecto en los riñones dada por la inflamación generada por estos contaminantes. En la Figura \ref{fig:dag1} se puede observar el grafo generado con la guía de la Dra. Ocampo.
+La primera propuesta de la DAG fue dada por la estudiante de medicina Leslie Aleydis Ocampo Hernández, quien recalcó el efecto de los contaminantes en el aumento de la proteína C reactiva ($pcr$), debido a la inflamación que estos generan. Asimismo, estableció el efecto que tiene el material particulado ($PM_{10}$ y $PM_{2.5}$) y el amoníaco ($NH_3$) en los niveles de ácido úrico y creatinina, debido al efecto en los riñones dada por la inflamación generada por estos contaminantes. En la Figura \ref{fig:dag1} se puede observar el grafo generado con la guía de la Dra. Ocampo.
 
 \begin{figure}[H]
     \centering
@@ -160,6 +160,25 @@ En un modelo paramétrico $k$ es bajo, (coeficientes + varianzas), pero en un mo
 Como lo mencionamos anteriormente, en un modelo no paramétrico la verosimilitud suele aumentar, y como la penalización por los parámetros, que podemos observar en la fórmula de AIC\ref{eq:aic} se comporta como $2k$, normalmente la mejora en la verosimilitud lo compensa, por lo que AIC suele ser más bajo. (mejor)\\
 
 En BIC, la verosimilitud también mejora, pero la penalización cambia \ref{eq:bic} , si $n$ es pequeño (número de datos), $ln(n)$ no es tan grande y la penalización puede matar al modelo no paramétrico, en cambio, si $n$ es grande, la verosimilitud aumentada puede compensar la penalización. Por lo que dependiendo de $n$ puede mejorar o no.\\
+
+Como podemos darnos cuenta, el modelo que dio un mejor resultado para las métricas planteadas fue el propuesto en colaboración con la Dra. Silvia, por lo tanto, a partir de las variables relacionadas en esta DAG podemos plantear ciertas preguntas a responder.
+\\
+
+\begin{enumerate}
+    \item ¿Cuál es la probabilidad de que una persona de 20 años o menos tenga niveles de ferritina mayores a 100, respecto a las personas mayores de 50 años, dado que se tiene contacto con niveles de NOx mayores a 20,000?
+\end{enumerate}
+
+En lugares con niveles de NOx superiores a 20,000, la probabilidad de que una persona de 20 años o menos presente niveles de ferritina mayores a 100 es de aproximadamente \(0.13\), mientras que en personas mayores de 50 años esta probabilidad aumenta a cerca de \(0.19\). Esto indica que, bajo las mismas condiciones de exposición a contaminantes, los adultos mayores tienen un riesgo relativo más alto de presentar ferritina elevada en comparación con los jóvenes.\\
+
+\begin{enumerate}
+    \setcounter{enumi}{1}
+    \item ¿Cuál es la probabilidad de que una persona viva en un municipio con niveles de \( \text{PM}_{10} \) mayores a 2,000 dado que su nivel de ácido úrico es menor a 3, respecto a las personas con nivel de 6 o más?
+\end{enumerate}
+
+En los municipios con niveles de \( \text{PM}_{10} \) superiores a 2,000, la probabilidad de que una persona con ácido úrico bajo (menor a 3) viva en estas condiciones es de aproximadamente \(0.176\), mientras que para las personas con ácido úrico alto (mayor o igual a 6), esta probabilidad aumenta a cerca de \(0.299\). Esto indica que parece existir una asociación entre la exposición a mayores concentraciones de \( \text{PM}_{10} \) y los niveles elevados de ácido úrico.
+
+
+
 
 
 
