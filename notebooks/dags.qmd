@@ -227,9 +227,13 @@ p_alto <- cpquery(dag2_fit,event = (suma_pm_010 > 2000), evidence = (ac_urico >=
 p_bajo
 p_alto
 ```
+¿Cuál es la probabilidad de que personas que viven en lugares con niveles de NH_3 superiores a 6,000 y niveles de SO_2 superiores a 200 tengan niveles de ferritina mayores a 50?
 
 ```{r}
 p_ferritina_alta <- cpquery(dag2_fit, event = (ferritina > 50), evidence = (suma_nh_3 > 6000 & suma_so_2 > 200),n = 10^6)
 p_ferritina_alta
 ```
-
+¿Cuál es la probabilidad de que una persona tenga niveles de proteína C reactiva mayores a 0.5 dado que vive en un municipio con niveles de PM_{2.5} mayores a 2,000 y niveles de PM_{10} mayores a 2500?
+```{r}
+cpquery(dag2_fit, event=(pcr>0.5), evidence=((suma_pm_2_5>2000) & (suma_pm_010>2500)), n=10^6)
+```
