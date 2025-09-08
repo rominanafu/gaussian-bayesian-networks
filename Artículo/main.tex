@@ -108,7 +108,11 @@ BIC = -2 \ln(\hat{L}) + k \ln(n)
 \\
 Después de seleccionar un modelo óptimo en base al puntaje BIC, se formarán 3 preguntas a resolver con dicha red bayesiana, las cuales se propondrán con el apoyo de los especialistas contactados para la propuesta de las redes.
 
+\newpage
+
 \section*{Aplicación}
+
+Para poder utilizar los datos de las encuestas, fue necesario realizar una limpieza a estos, para esto, se eliminaron los registros con valores faltantes, se cambió el formato de entrada de los valores numéricos, entre otros detalles. Así mismo, utilizando el estado y municipio de cada persona encuestada, se realizó una conexión con la base de datos de las mediciones de contaminantes, de manera que obtuvimos un estimado de la calidad del aire del lugar en el que vive cada persona.\\
 
 La primera propuesta de la DAG fue dada por la estudiante de medicina Leslie Aleydis Ocampo Hernández, quien recalcó el efecto de los contaminantes en el aumento de la proteína C reactiva ($pcr$), debido a la inflamación que estos generan. Asimismo, estableció el efecto que tiene el material particulado ($PM_{10}$ y $PM_{2.5}$) y el amoníaco ($NH_3$) en los niveles de ácido úrico y creatinina, debido al efecto en los riñones dada por la inflamación generada por estos contaminantes. En la Figura \ref{fig:dag1} se puede observar el grafo generado con la guía de la Dra. Ocampo.
 
@@ -196,9 +200,6 @@ En los municipios con niveles de \( \text{PM}_{10} \) superiores a 2,000, la pro
 En lugares donde los niveles de \( \text{PM}_{2.5} \) superan 2,000 y los niveles de \( \text{PM}_{10} \) superan 2,500, la probabilidad de que una persona presente un valor de PCR mayor a 0.5 es de aproximadamente \(0.4242\). Esto parece indicar que hay una relación entre los indicadores de inflamación y exposición al material particulado, relación enfatizada por el Dr. Zabre.
 
 
-
-
-
 \section*{Conclusión}
 
 Se buscó mostrar que las redes bayesianas gaussianas constituyen una herramienta útil para analizar el impacto de la contaminación del aire en la salud de la población mexicana a través de los biomarcadores. Los resultados sugieren una relación entre la exposición a contaminantes como el óxido de nitrógeno, dióxido de azufre y el amoníaco con algunos biomarcadores asociados a la inflamación y alteraciones metabólicas, como la proteína C reactiva, la ferritina y el ácido úrico. Estos resultados recuerdan la necesidad de considerar la calidad del aire como un factor determinante en la salud pública, especialmente en zonas urbanas de alta densidad poblacional.
@@ -208,6 +209,7 @@ No obstante, el estudio presenta ciertas limitaciones, entre ellas la falta de u
 \\
 
 En conclusión, los resultados obtenidos subrayan la importancia de aplicar modelos probabilísticos a temas de salud ambiental, ofreciendo una base científica que puede guiar la formulación de políticas públicas preventivas y estrategias de mitigación frente a la contaminación del aire en México.
+
 
 %% Referencias
 \printbibliography[title={Referencias}]
