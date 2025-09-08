@@ -8,6 +8,7 @@
 \usepackage{enumitem}
 \usepackage[margin=1in]{geometry}
 \usepackage[figurename=Figura]{caption}
+\usepackage[tablename=Tabla]{caption}
 \usepackage{indentfirst}
 \usepackage{biblatex}
 \addbibresource{bibliografia.bib}
@@ -89,12 +90,21 @@ Utilizando estas variables, se consultará a especialistas en las áreas de medi
 Con ello, se generarán 3 DAGs, las cuales serán ajustadas a los datos para ser posteriormente comparadas entre sí a través del Criterio de Información Bayesiano (BIC), el cual considera la verosimilitud y la complejidad de cada modelo para asignar un puntaje que se busca maximizar  \cite{scutari2021bayesian}, y del Criterio de Información Akaike (AIC), el cual considera los mismos parámetros que el BIC, pero penaliza en menor escala a la complejidad del modelo.
 \\
 
+Estos criterios de información se calculan de la siguiente manera:
+\\
+\begin{equation}
+AIC = -2 \ln(\hat{L}) + 2k
+\label{eq:aic}
+\end{equation}
+
+\begin{equation}
+BIC = -2 \ln(\hat{L}) + k \ln(n)
+\label{eq:bic}
+\end{equation}
+\\
 Después de seleccionar un modelo óptimo en base al puntaje BIC, se formarán 3 preguntas a resolver con dicha red bayesiana, las cuales se propondrán con el apoyo de los especialistas contactados para la propuesta de las redes.
 
 \section*{Aplicación}
-
-Para poder utilizar los datos de las encuestas, fue necesario realizar una limpieza a estos, para esto, se eliminaron los registros con valores faltantes, se cambió el formato de entrada de los valores numéricos, entre otros detalles. Así mismo, utilizando el estado y municipio de cada persona encuestada, se realizó una conexión con la base de datos de las mediciones de contaminantes, de manera que obtuvimos un estimado de la calidad del aire del lugar en el que vive cada persona.
-\\
 
 La primera propuesta de la DAG fue dada por la estudiante de medicina Leslie Aleydis Ocampo Hernández, quien recalcó el efecto de los contaminantes en el aumento de la proteína C reactiva ($pcr$), debido a la inflamación que estos generan. Asimismo, estableció el efecto que tiene el material particulado ($PM_{10}$ y $PM_{2.5}$) y el amoniaco ($NH_3$) en los niveles de ácido úrico y creatinina, debido al efecto en los riñones dada por la inflamación generada por estos contaminantes. En la Figura \ref{fig:dag1} se puede observar el grafo generado con la guía de la Dra. Ocampo.
 
@@ -141,6 +151,17 @@ Evaluando los modelos en los criterios de información seleccionados, se obtuvie
     \caption{Criterios de información bayesiano y akaike en los modelos propuestos.}
     \label{tab:scores}
 \end{table}
+
+
+En una red bayesiana gaussiana lineal, como la aquí utilizada, se asume que la media de la distribución normal es una combinación lineal de sus nodos padre; en un modelo no paramétrico, no se impone la regresión lineal para la media, sino que se usan splines o procesos más flexibles que se adaptan a los datos. Como el modelo tiene más “libertad” en los modelos no paramétricos para captar las irregularidades de los datos, la verosimilitud suele aumentar.\\
+
+En un modelo paramétrico $k$ es bajo, (coeficientes + varianzas), pero en un modelo no paramétrico, $k$ tiende a ser más alto. Por ejemplo, en splines, aumentan la cantidad de parámetros\\
+
+Como lo mencionamos anteriormente, en un modelo no paramétrico la verosimilitud suele aumentar, y como la penalización por los parámetros, que podemos observar en la fórmula de AIC\ref{eq:aic} se comporta como $2k$, normalmente la mejora en la verosimilitud lo compensa, por lo que AIC suele ser más bajo. (mejor)\\
+
+En BIC, la verosimilitud también mejora, pero la penalización cambia \ref{eq:bic} , si $n$ es pequeño (número de datos), $ln(n)$ no es tan grande y la penalización puede matar al modelo no paramétrico, en cambio, si $n$ es grande, la verosimilitud aumentada puede compensar la penalización. Por lo que dependiendo de $n$ puede mejorar o no.\\
+
+
 
 \section*{Conclusión}
 
